@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Bluetoothcontroller</string>
+    <string name="ButtonLeft">Left</string>
+    <string name="ButtonRight">Right</string>
+    <string name="ButtonForward">Forward</string>
+    <string name="ButtonBack">Back</string>
+</resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.bluetoothcontroller.bluetoothcontroller.MainActivity">
+
+
+    <Button
+        android:text="@string/ButtonLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:id="@+id/ButtonLeft" />
+
+    <Button
+        android:text="@string/ButtonRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ButtonLeft"
+        android:layout_toRightOf="@+id/ButtonLeft"
+        android:layout_toEndOf="@+id/ButtonLeft"
+        android:layout_marginLeft="55dp"
+        android:layout_marginStart="55dp"
+        android:id="@+id/ButtonRight" />
+
+    <Button
+        android:text="@string/ButtonForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ButtonRight"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="72dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="29dp"
+        android:id="@+id/ButtonForward" />
+
+    <Button
+        android:text="@string/ButtonBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ButtonRight"
+        android:layout_alignLeft="@+id/ButtonForward"
+        android:layout_alignStart="@+id/ButtonForward"
+        android:layout_marginTop="30dp"
+        android:id="@+id/ButtonBack" />
+</RelativeLayout>
