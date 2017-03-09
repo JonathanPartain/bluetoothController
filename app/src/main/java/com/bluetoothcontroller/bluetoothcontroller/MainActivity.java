@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -22,12 +25,14 @@ public class MainActivity extends AppCompatActivity {
     Button ButtonForward;
     Button ButtonBack; //backwards
     // bluetooth connection
-    BluetoothAdapter btAdapter;
+    private BluetoothAdapter btAdapter = null;
+    private BluetoothSocket btSocket = null;
+    private OutputStream outStream = null;
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    // bluetooth module MAC address
+    private static String MACaddress = "20:15:10:20:14:09";
+
     private static final int REQUEST_ENABLE_BT = 1;
-
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,34 +55,18 @@ public class MainActivity extends AppCompatActivity {
             if (!btAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-
-            }
-
-            else {
-                // get paired devices
-                Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
-
-                if (pairedDevices.size() > 0) {
-                    // there exists paired devices
-                    for (BluetoothDevice device : pairedDevices) {
-                        String dName = device.getName();
-                        String MAC = device.getAddress();
-
-                    }
-
-                }
-                // discover new devices
-                btAdapter.startDiscovery();
-
-                // create the UUID
-                UUID uuid = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
-
             }
 
         }
 
 
-
+        /**
+         * MOVING WILL BE DONE USING WASD
+         *   W    |   ^
+         * A S D  | < v >
+         *
+         *
+         */
         // Button for setting motor power positive
         ButtonForward.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -85,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
                 // set power forward
                 while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
                     // move
+
+                    sendData('w');
                 }
 
                 return false;
@@ -96,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
                     // move
+                    sendData('s');
                 }
 
                 return false;
@@ -109,9 +101,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
                     // move
+                    sendData('a');
                 }
-
-
                 return false;
             }
         });
@@ -122,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
                     // move
+                    sendData('d');
                 }
                 return false;
             }
@@ -129,6 +121,79 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (outStream != null) {
+            try {
+                outStream.flush();
+            } catch (IOException e) {
+                errorExit("Fatal Error", "In onPause() and failed to flush output stream: " + e.getMessage() + ".");
+            }
+        }
+
+        try     {
+            btSocket.close();
+        } catch (IOException e2) {
+            errorExit("Fatal Error", "In onPause() and failed to close socket." + e2.getMessage() + ".");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BluetoothDevice device = btAdapter.getRemoteDevice(MACaddress);
+
+
+        try {
+            btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+
+        } catch (IOException e) {
+
+            errorExit("Fatal Error", "In onResume() and socket create failed: " + e.getMessage() + ".");
+        }
+
+        // stop discovery, to avoid using too many resources
+        btAdapter.cancelDiscovery();
+
+        try {
+            btSocket.connect();
+
+        }
+        catch (IOException e) {
+            try {
+                btSocket.close();
+            } catch (IOException e2) {
+                errorExit("Fatal error!", "onResume failed to close socket on connection error! " + e2.getMessage() + ".");
+            }
+        }
+
+        // create stream to talk
+        try {
+            outStream = btSocket.getOutputStream();
+        } catch (IOException e) {
+            errorExit("Fatal Error", "In onResume() and output stream creation failed:" + e.getMessage() + ".");
+        }
+
+    }
+
+    private void errorExit(String title, String message) {
+        Toast msg = Toast.makeText(getBaseContext(), title + " : " + message, Toast.LENGTH_LONG);
+        msg.show();
+        finish();
+    }
+
+    private void sendData(char c) {
+        byte[] send = new String(c+"").getBytes();
+        try {
+            outStream.write(send);
+        }
+        catch (IOException e) {
+
+        }
     }
 
 
