@@ -72,12 +72,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // set power forward
-                while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
-                    // move
-
-                    sendData('w');
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        sendData("w");
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        sendData("x");  // stop
+                        return true;
                 }
-
                 return false;
             }
         });
@@ -85,9 +87,13 @@ public class MainActivity extends AppCompatActivity {
         ButtonBack.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
-                    // move
-                    sendData('s');
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        sendData("s");
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        sendData("x");  // stop
+                        return true;
                 }
 
                 return false;
@@ -99,10 +105,16 @@ public class MainActivity extends AppCompatActivity {
         ButtonLeft.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
-                    // move
-                    sendData('a');
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        sendData("a");
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        sendData("x"); // stop
+                        return true;
+
                 }
+
                 return false;
             }
         });
@@ -111,9 +123,13 @@ public class MainActivity extends AppCompatActivity {
         ButtonRight.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                while (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
-                    // move
-                    sendData('d');
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        sendData("d");
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        sendData("x");  // stop
+                        return true;
                 }
                 return false;
             }
@@ -186,14 +202,16 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void sendData(char c) {
-        byte[] send = new String(c+"").getBytes();
-        try {
-            outStream.write(send);
-        }
-        catch (IOException e) {
+    private void sendData(String send) {
+        if (btSocket != null) {
+            try {
+                btSocket.getOutputStream().write(send.getBytes());
+            }
+            catch (IOException e) {
 
+            }
         }
+
     }
 
 
